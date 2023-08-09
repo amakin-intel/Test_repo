@@ -1,18 +1,32 @@
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+name: Test Comment
+
+on:
+  issue_comment:
+    types: [created]
+
 jobs:
-  Explore-GitHub-Actions:
+  test_comment:
     runs-on: ubuntu-latest
+    if: contains(github.event.comment.body, '/test')
+
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+    - name: Check if comment is from a Pull Request
+      id: check_pr
+      run: |
+        PR_URL=$(jq -r ".issue.pull_request.url" "$GITHUB_EVENT_PATH")
+        if [[ "$PR_URL" != "null" ]]; then
+          PR_NUMBER=$(jq -r ".issue.number" "$GITHUB_EVENT_PATH")
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+        fi
+
+    - name: Comment on Pull Request
+      if: env.PR_NUMBER
+      uses: actions/github-script@v5
+      with:
+        github-token: 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
+        script: |
+          const pr_number = process.env.PR_NUMBER;
+          const message = "Running tests...";
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context
