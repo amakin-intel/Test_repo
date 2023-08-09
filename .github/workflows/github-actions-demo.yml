@@ -1,32 +1,28 @@
 name: Test Comment
 
 on:
-  issue_comment:
+  pull_request_review_comment:
     types: [created]
 
 jobs:
   test_comment:
     runs-on: ubuntu-latest
-    if: contains(github.event.comment.body, '/test')
-
     steps:
-    - name: Check if comment is from a Pull Request
-      id: check_pr
-      run: |
-        PR_URL=$(jq -r ".issue.pull_request.url" "$GITHUB_EVENT_PATH")
-        if [[ "$PR_URL" != "null" ]]; then
-          PR_NUMBER=$(jq -r ".issue.number" "$GITHUB_EVENT_PATH")
-          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
-        fi
+      - name: Check for /test comment
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const { context, github } = require("@actions/github");
+            const commentBody = context.payload.comment.body;
 
-    - name: Comment on Pull Request
-      if: env.PR_NUMBER
-      uses: actions/github-script@v5
-      with:
-        github-token: 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
-        script: |
-          const pr_number = process.env.PR_NUMBER;
-          const message = "Running tests...";
-          await github.rest.issues.createComment({
-            owner: context.repo.owner,
-            repo: context
+            if (commentBody.trim() === "/test") {
+              const issueNumber = context.payload.issue.number;
+              const repo = context.repo;
+              const message = "Running tests...";
+
+              github.rest.issues.createComment({
+                ...repo,
+                issue_number: issueNumber,
+                body: message,
+              });
+            }
