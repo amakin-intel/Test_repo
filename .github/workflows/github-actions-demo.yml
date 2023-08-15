@@ -16,7 +16,11 @@ jobs:
       
   test2:
     runs-on: [ubuntu-latest]
+    outputs:
+      commit_sha: ${{ steps.variables.outputs.commit_sha }}
     steps:
+    - name: Get commit sha
+    - id: commit_sha
     - uses: actions/github-script@v6
       with:
         github-token: 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
@@ -29,5 +33,9 @@ jobs:
             ref: 'main',
             inputs: {
               'commit-sha': pull_request.data.head.sha
+              echo "commit_sha=pull_request.data.head.sha" >> $env:GITHUB_OUTPUT
             }
           })
+          
+    - name: Confirm variables
+      run: echo "${{ steps.commit_sha.outputs.commit_sha }}"
