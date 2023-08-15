@@ -16,6 +16,8 @@ jobs:
       
   test2:
     runs-on: [ubuntu-latest]
+    outputs:
+      commit_sha: ${{ steps.variables.outputs.commit_sha }}
     steps:
     - uses: actions/github-script@v6
       id: set-result
@@ -29,6 +31,8 @@ jobs:
         result-encoding: string
 
     - name: Get result
-      run: echo "${{steps.set-result.outputs.result}}"
-  
+      run: echo "commit_sha=${{steps.set-result.outputs.result}}" >> $env:GITHUB_OUTPUT
+
+    - name: Confirm variables
+      run: echo "${{ steps.variables.outputs.commit_sha }}"
         
