@@ -22,7 +22,6 @@ jobs:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
           const pull_request = await github.rest.pulls.get({pull_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo})
-          response = await github.rest.actions.createWorkflowDispatch({owner: context.repo.owner, repo: context.repo.repo, workflow_id: 'github-actions-demo.yml',ref: 'main',inputs: {'commit-sha': pull_request.data.head.sha, 'pull-request': context.issue.number.toString()}})
-          echo $response
+          console.log(pull_request.data.head.sha)
         
         
