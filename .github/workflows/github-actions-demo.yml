@@ -1,11 +1,12 @@
 name: Comment Trigger
 
 on:
-  pull_request:
-    types: [ opened, synchronize, reopen, edited ]
+  issue_comment:
+    types: [created]
 
 jobs:
   test:
+    if: contains(github.event.comment.body, '/test')
     runs-on: ubuntu-latest
     steps:
     - name: First type
