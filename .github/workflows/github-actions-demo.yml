@@ -1,28 +1,13 @@
-name: Test Comment
+name: Comment Trigger
 
 on:
-  pull_request_review_comment:
-    types: [created]
+  issue_comment:
+    types: [created, edited]
 
 jobs:
-  test_comment:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: Check for /test comment
-        uses: actions/github-script@v5
-        with:
-          script: |
-            const { context, github } = require("@actions/github");
-            const commentBody = context.payload.comment.body;
-
-            if (commentBody.trim() === "/test") {
-              const issueNumber = context.payload.issue.number;
-              const repo = context.repo;
-              const message = "Running tests...";
-
-              github.rest.issues.createComment({
-                ...repo,
-                issue_number: issueNumber,
-                body: message,
-              });
-            }
+    - name: Check for /test in comment
+      if: contains(github.event.comment.body, '/test')
+      run: echo "Comment contains /test"
