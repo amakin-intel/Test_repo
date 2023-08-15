@@ -33,5 +33,7 @@ jobs:
               'commit-sha': pull_request.data.head.sha,
               'pull-request': context.issue.number.toString(),
             }
+             echo "commit_sha=${{ pull_request.data.head.sha }}" >> $env:GITHUB_OUTPUT
           })
+        
         
