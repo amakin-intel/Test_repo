@@ -21,7 +21,10 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
+          console.log("Something one")
           const pull_request = await github.rest.pulls.get({pull_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo})
+          console.log("Something two")
           console.log(pull_request.data.head.sha)
+          console.log("Something three")
         
         
