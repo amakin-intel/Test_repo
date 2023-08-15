@@ -16,6 +16,8 @@ jobs:
       
   test2:
     runs-on: [ubuntu-latest]
+    outputs:
+      commit_sha: ${{ steps.variables.outputs.commit_sha }}
     steps:
     - uses: actions/github-script@v6
       with:
