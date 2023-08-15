@@ -13,3 +13,11 @@ jobs:
       run: echo "First type ${{ github.event.issue_comment.head.sha }}"
     - name: Second type
       run: echo "Second type ${{ github.event.workflow_run.head_sha }}"
+      
+  test2:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Dump GitHub context
+          env:
+            GITHUB_CONTEXT: ${{ toJSON(github) }}
+          run: echo "$GITHUB_CONTEXT"
