@@ -18,13 +18,17 @@ jobs:
     runs-on: [ubuntu-latest]
     steps:
     - uses: actions/github-script@v6
+      id: set-result
       with:
         github-token: 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
         script: |
           console.log("Something one")
           const pull_request = await github.rest.pulls.get({pull_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo})
           console.log("Something two")
-          console.log(pull_request.data.head.sha)
-          console.log("Something three")
-        
+          return pull_request.data.head.sha
+          result-encoding: string
+
+    - name: Get result
+      run: echo "${{steps.set-result.outputs.result}}"
+  
         
