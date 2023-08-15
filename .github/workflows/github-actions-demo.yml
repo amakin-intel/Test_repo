@@ -30,7 +30,8 @@ jobs:
           return pull_request.data.head.sha
         result-encoding: string
 
-    - name: Get result
+    - name: Set variable
+      id: variables
       run: echo "commit_sha=${{steps.set-result.outputs.result}}" >> $env:GITHUB_OUTPUT
 
     - name: Confirm variables
