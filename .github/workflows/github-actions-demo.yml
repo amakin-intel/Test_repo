@@ -20,19 +20,17 @@ jobs:
       commit_sha: ${{ steps.variables.outputs.commit_sha }}
     steps:
     - uses: actions/github-script@v6
-      id: set-result
+      id: set-sha-result
       with:
         github-token: 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
         script: |
-          console.log("Something one")
           const pull_request = await github.rest.pulls.get({pull_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo})
-          console.log("Something two")
           return pull_request.data.head.sha
         result-encoding: string
 
     - name: Set variable
       id: variables
-      run: echo "commit_sha=${{steps.set-result.outputs.result}}" >> $env:GITHUB_OUTPUT
+      run: echo "commit_sha=${{steps.set-sha-result.outputs.result}}" >> $env:GITHUB_OUTPUT
 
     - name: Confirm variables
       run: echo "${{ steps.variables.outputs.commit_sha }}"
