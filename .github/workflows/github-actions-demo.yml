@@ -1,15 +1,14 @@
 name: Comment Trigger
 
 on:
-  issue_comment:
-    types: [created, edited]
+  pull_request:
+    types: [ opened, synchronize, reopen, edited ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - name: Check for /test in comment
-      run: echo "Comment contains /test"
-      if: contains(github.event.comment.body, '/test')
-    - name: Could be a publish here
-      run: echo "This is the publish step"
+    - name: First type
+      run: echo "First type ${{ github.event.pull_request.head.sha }}"
+    - name: Second type
+      run: echo "Second type ${{ github.event.workflow_run.head_sha }}"
