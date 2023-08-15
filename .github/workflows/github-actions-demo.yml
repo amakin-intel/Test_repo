@@ -7,9 +7,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: contains(github.event.comment.body, '/test')
     steps:
     - name: Check for /test in comment
       run: echo "Comment contains /test"
+      if: contains(github.event.comment.body, '/test')
     - name: Could be a publish here
       run: echo "This is the publish step"
