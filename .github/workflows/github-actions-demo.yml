@@ -19,7 +19,7 @@ jobs:
     steps:
     - uses: actions/github-script@v6
       with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
+        github-token: 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
         script: |
           console.log("Something one")
           const pull_request = await github.rest.pulls.get({pull_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo})
