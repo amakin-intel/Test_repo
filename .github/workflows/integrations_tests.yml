@@ -5,16 +5,19 @@ on:
     types: [ opened, synchronize, reopen, edited ]
 
 jobs:
- prepare:
-    runs-on: [ ubuntu-latest ]
-    outputs:
-      commit_sha: ${{ steps.variables.outputs.commit_sha }}
-    steps:
-      - name: Set variables
-        id: variables
-        run: |
-          echo "commit_sha=${{ github.event.pull_request.head.sha }}" >> $env:GITHUB_OUTPUT
+  trigger_tests:
+      runs-on: [ self-hosted, Windows, pull-request ]
+      steps:
+        - name: Prepare test context
+          id: prepare_test_context
+          run: |
+            echo "Published gfxbench version is: GFX2-v${{ needs.publish.outputs.gfxbenchver }}"
+            $response = curl -u vjihanak-api:E8A010EDFD0F37CD2FA2BA58E3AB4A4128F30DEAC2AB45D988BFD262B608CCFD https://gta.intel.com/api/res-mngr-resources/RES-177588/version/GFX2-vdev-20230816-031813-intelvenni-32f7d
+            echo $response
+            $statusid = $response | ConvertFrom-Json
+            $statusid = $statusid.status
+            echo "CURL_STATUS_ID=$statusid" >> $env:GITHUB_OUTPUT
+          shell: powershell
 
-      - name: Confirm variables
-        run: |
-          echo "${{ steps.variables.outputs.commit_sha }}"
+        - name: Echo status
+          run: echo ${{steps.prepare_test_context.outputs.TEST_CONTEXT_ID}}
