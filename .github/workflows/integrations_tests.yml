@@ -8,15 +8,9 @@ jobs:
   trigger_tests:
       runs-on: [ ubuntu-latest ]
       steps:
-        - name: Get resource status
-          id: resource_status
-          run: |
-            $response = curl -u vjihanak-api:E8A010EDFD0F37CD2FA2BA58E3AB4A4128F30DEAC2AB45D988BFD262B608CCFD https://gta.intel.com/api/res-mngr-resources/RES-177588/version/GFX2-vdev-20230816-031813-intelvenni-32f7d
-            echo $response
-            $statusid = $response | ConvertFrom-Json
-            $statusid = $statusid.status
-            echo "CURL_STATUS_ID=$statusid" >> $env:GITHUB_OUTPUT
-          shell: powershell
-
-        - name: Echo status
-          run: echo ${{steps.resource_status.outputs.TEST_CONTEXT_ID}}
+      - name: Run loop
+        run: |
+          echo "Therve"
+          sleep 10s
+          echo "Hetki meni"
+        shell: bash
