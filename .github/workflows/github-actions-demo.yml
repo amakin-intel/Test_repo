@@ -1,38 +1,34 @@
-name: Comment Trigger
+
+name: Checkout PR on comment
 
 on:
   issue_comment:
-    types: [created]
-
+    # triggers on created, edited and deleted by default, you may wanna restrict it, e.g.:
+    #types: [created]
 jobs:
-  test:
-    if: contains(github.event.comment.body, '/test')
+  pr-commented:
+    name: PR commented
+    if: github.event.issue.pull_request
     runs-on: ubuntu-latest
     steps:
-    - name: First type
-      run: echo "First type ${{ github.event.issue_comment.head.sha }}"
-    - name: Second type
-      run: echo "Second type ${{ github.event.workflow_run.head_sha }}"
-      
-  test2:
-    runs-on: [ubuntu-latest]
-    outputs:
-      commit_sha: ${{ steps.variables.outputs.commit_sha }}
-    steps:
-    - uses: actions/github-script@v6
-      id: set-sha-result
-      with:
-        github-token: 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
-        script: |
-          const pull_request = await github.rest.pulls.get({pull_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo})
-          await github.rest.actions.createWorkflowDispatch({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            workflow_id: 'integrations_tests.yml',
-            ref: 'main',
-            inputs: {
-              'commit-sha': pull_request.data.head.sha,
-              'pull-request': context.issue.number.toString(),
+      - uses: actions/github-script@v3
+        id: get-pr
+        with:
+          script: |
+            const request = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
             }
-          })
+            core.info(`Getting PR #${request.pull_number} from ${request.owner}/${request.repo}`)
+            try {
+              const result = await github.pulls.get(request)
+              return result.data
+            } catch (err) {
+              core.setFailed(`Request failed with error ${err}`)
+            }
+      - uses: actions/checkout@v2
+        with:
+          repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
+          ref: ${{ fromJSON(steps.get-pr.outputs.result).head.sha }} # or .head.ref for branch name
         
