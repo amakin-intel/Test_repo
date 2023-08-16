@@ -6,12 +6,11 @@ on:
 
 jobs:
   trigger_tests:
-      runs-on: [ self-hosted, Windows, pull-request ]
+      runs-on: [ ubuntu-latest ]
       steps:
-        - name: Prepare test context
-          id: prepare_test_context
+        - name: Get resource status
+          id: resource_status
           run: |
-            echo "Published gfxbench version is: GFX2-v${{ needs.publish.outputs.gfxbenchver }}"
             $response = curl -u vjihanak-api:E8A010EDFD0F37CD2FA2BA58E3AB4A4128F30DEAC2AB45D988BFD262B608CCFD https://gta.intel.com/api/res-mngr-resources/RES-177588/version/GFX2-vdev-20230816-031813-intelvenni-32f7d
             echo $response
             $statusid = $response | ConvertFrom-Json
@@ -20,4 +19,4 @@ jobs:
           shell: powershell
 
         - name: Echo status
-          run: echo ${{steps.prepare_test_context.outputs.TEST_CONTEXT_ID}}
+          run: echo ${{steps.resource_status.outputs.TEST_CONTEXT_ID}}
