@@ -11,6 +11,6 @@ jobs:
       - name: Run loop
         run: |
           echo "Therve"
-          sleep 10s
+          sleep 30s
           echo "Hetki meni"
         shell: bash
