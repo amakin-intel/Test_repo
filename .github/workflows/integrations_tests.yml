@@ -1,0 +1,61 @@
+name: Integration Tests
+run-name: 'Integration Tests - #${{ inputs.pull-request }} - ${{ inputs.commit-sha }}'
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit-sha:
+        description: Commit Sha
+        required: true
+      pull-request:
+        description: Pull Request
+        required: true
+
+env:
+  VERSION: dev-${{ github.event.inputs.commit-sha}}
+  ARTIFACTORY_ASSET_PATH: gfx-sandbox-fm/gtax-runner/commits
+  CACHE_ROOT: ${{ github.workspace }}/cache
+
+jobs:
+  integration-tests:
+    runs-on: [self-hosted, linux, gta]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        ref: ${{ github.event.inputs.commit-sha }}
+        path: runner
+    - name: Publish to Artifactory
+      working-directory: runner
+      env:
+        ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+        ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      run: make publish
+    - name: Run Integrations Tests
+      working-directory: runner
+      run: ./gta integration_tests --service-url http://10.105.144.129:8080 --int-jobs-version 0.0.29 --gtax-runner-path ${{ env.ARTIFACTORY_ASSET_PATH }} ${{ env.VERSION }}
+    - name: Success
+      if: ${{ success() }}
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.payload.inputs['pull-request'],
+            body: "Integration tests have passed :heavy_check_mark:",
+          });
+    - name: Failure
+      if: ${{ failure() }}
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.payload.inputs['pull-request'],
+            body: "Integration tests have failed :x:",
+          });
