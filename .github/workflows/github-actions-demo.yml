@@ -25,13 +25,14 @@ jobs:
         github-token: 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
         script: |
           const pull_request = await github.rest.pulls.get({pull_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo})
-          return pull_request.data.head.sha
-        result-encoding: string
-
-    - name: Set variable
-      id: variables
-      run: echo "commit_sha=${{steps.set-sha-result.outputs.result}}" >> $env:GITHUB_OUTPUT
-
-    - name: Confirm variables
-      run: echo "${{ steps.variables.outputs.commit_sha }}"
+          await github.rest.actions.createWorkflowDispatch({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'integrations_tests.yml',
+            ref: 'main',
+            inputs: {
+              'commit-sha': pull_request.data.head.sha,
+              'pull-request': context.issue.number.toString(),
+            }
+          })
         
