@@ -16,6 +16,7 @@ jobs:
             $statusid = $response | ConvertFrom-Json
             $statusid = $statusid.status
             echo "CURL_STATUS_ID=$statusid" >> $env:GITHUB_OUTPUT
+          shell: powershell
 
         - name: Echo status
           run: echo ${{steps.resource_status.outputs.TEST_CONTEXT_ID}}
