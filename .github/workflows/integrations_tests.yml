@@ -11,6 +11,9 @@ jobs:
       - name: Run loop
         run: |
           echo "Therve"
-          sleep 30s
-          echo "Hetki meni"
+          while [ $x -le 5 ]
+          do
+            echo "Welcome $x times"
+            x=$(( $x + 1 ))
+          done
         shell: bash
