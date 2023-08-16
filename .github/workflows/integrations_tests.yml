@@ -11,9 +11,9 @@ jobs:
       - name: Run loop
         run: |
           echo "Therve"
-          while [ $x -le 5 ]
-          do
-            echo "Welcome $x times"
-            x=$(( $x + 1 ))
-          done
+          while($val -ne 3)
+          {
+              $val++
+              Write-Host $val
+          }
         shell: powershell
