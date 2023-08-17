@@ -1,8 +1,8 @@
 name: This is an example
 
 on:
-  pull_request:
-    types: [ opened, synchronize, reopen, edited ]
+  issue_comment:
+    types: [created]
 
 jobs:
   one:
