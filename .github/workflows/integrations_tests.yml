@@ -13,6 +13,7 @@ jobs:
       - uses: actions/github-script@v3
         id: get-pr
         with:
+          github-token: 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
           script: |
             const request = {
               owner: context.repo.owner,
