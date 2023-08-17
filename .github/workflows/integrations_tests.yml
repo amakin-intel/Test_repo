@@ -6,19 +6,13 @@ on:
 
 jobs:
   prepare:
-    runs-on: [ windows-latest ]
-    outputs:
-      commit_sha: ${{ steps.variables.outputs.commit_sha }}
-      commit_sha_short: ${{ steps.variables.outputs.commit_sha_short }}
-      build_number: ${{ steps.variables.outputs.build_number }}
-      date_stamp: ${{ steps.variables.outputs.date_stamp }}
+    runs-on: [ ubuntu-latest ]
     steps:
       - uses: actions/github-script@v6
         id: set-sha-result
         with:
           github-token: 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
           script: |
-            $pull_request = await github.rest.pulls.get({pull_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo})
+            const pull_request = await github.rest.pulls.get({pull_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo})
             echo $pull_request
           result-encoding: string
-          shell: powershell
