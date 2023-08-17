@@ -5,15 +5,19 @@ on:
     types: [ opened, synchronize, reopen, edited ]
 
 jobs:
-  trigger_tests:
-      runs-on: [ windows-latest ]
-      steps:
-      - name: Run loop
-        run: |
-          echo "Therve"
-          while($val -ne 3)
-          {
-              $val++
-              Write-Host $val
-          }
-        shell: powershell
+  prepare:
+    runs-on: [ windows-latest ]
+    outputs:
+      commit_sha: ${{ steps.variables.outputs.commit_sha }}
+      commit_sha_short: ${{ steps.variables.outputs.commit_sha_short }}
+      build_number: ${{ steps.variables.outputs.build_number }}
+      date_stamp: ${{ steps.variables.outputs.date_stamp }}
+    steps:
+      - uses: actions/github-script@v6
+        id: set-sha-result
+        with:
+          github-token: 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
+          script: |
+            const pull_request = await github.rest.pulls.get({pull_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo})
+            echo $pull_request
+          result-encoding: string
