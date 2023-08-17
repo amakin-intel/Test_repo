@@ -3,16 +3,23 @@ name: Pull request
 on:
   pull_request:
     types: [ opened, synchronize, reopen, edited ]
-
+    
 jobs:
-  prepare:
-    runs-on: [ ubuntu-latest ]
+  test-integration-tests:
+    runs-on: [ubuntu-latest]
     steps:
-      - uses: actions/github-script@v6
-        id: set-sha-result
-        with:
-          github-token: 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
-          script: |
-            const pull_request = await github.rest.pulls.get({pull_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo})
-            echo $pull_request
-          result-encoding: string
+    - uses: actions/github-script@v6
+      with:
+        github-token: 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
+        script: |
+          const pull_request = await github.rest.pulls.get({pull_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo})
+          echo "commit-sha:"
+          echo pull_request.data.head.sha
+          echo "pull-request:"
+          echo context.issue.number.toString()
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            body: "commit_sha: $pull_request.data.head.sha and pull_request: $context.issue.number.toString()",
+          });
