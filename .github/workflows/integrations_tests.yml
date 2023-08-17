@@ -33,5 +33,7 @@ jobs:
           ref: ${{ fromJSON(steps.get-pr.outputs.result).head.sha }} # or .head.ref for branch name
       - name: Print sha
         id: print_sha
-        run: echo ${{ github.sha }}
+        run: |
+          echo ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
+          echo ${{ fromJSON(steps.get-pr.outputs.result).head.sha }}
 
