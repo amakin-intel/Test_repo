@@ -35,7 +35,7 @@ jobs:
       - name: Get changed files
         id: changes
         run: |
-          git diff ${{ github.sha }}..${{ fromJSON(steps.get-pr.outputs.result).head.sha }} > mydiff
+          git diff ${{ fromJSON(steps.get-pr.outputs.result).head.sha }} > mydiff
           git apply mydiff
           echo "mydiff = "
           cat mydiff
