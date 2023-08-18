@@ -35,6 +35,6 @@ jobs:
       - name: Get changed files
         id: changes
         run: |
-          echo "all=$(git diff --name-only --diff-filter=ACMRT ${{ fromJSON(steps.get-pr.outputs.result).base.sha }} ${{ github.sha }} | xargs)" >> $env:GITHUB_OUTPUT
+          echo "all=$(git diff --name-only --diff-filter=ACMRT ${{ fromJSON(steps.get-pr.outputs.result).head.sha }} ${{ github.sha }} | xargs)" >> $env:GITHUB_OUTPUT
           echo "${{ steps.changes.outputs.all}}"
         
