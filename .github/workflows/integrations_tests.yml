@@ -35,6 +35,8 @@ jobs:
       - name: Get changed files
         id: changes
         run: |
-          echo "all=$(git diff --stdout ${{ fromJSON(steps.get-pr.outputs.result).head.sha }} ${{ github.sha }})" >> $env:GITHUB_OUTPUT
-          echo "echo ${{ steps.changes.outputs.all}} | git apply"
+          git diff ${{ github.sha }}..${{ fromJSON(steps.get-pr.outputs.result).head.sha }} > mydiff
+          git apply mydiff
+          echo "mydiff = "
+          cat mydiff
         
