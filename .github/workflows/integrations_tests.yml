@@ -1,16 +1,16 @@
-name: Checkout PR on comment
+name: Trigger tests
 
 on:
   issue_comment:
-    # triggers on created, edited and deleted by default, you may wanna restrict it, e.g.:
-    #types: [created]
+    types: [created]
+
 jobs:
-  pr-commented:
-    name: PR commented
-    if: github.event.issue.pull_request
-    runs-on: ubuntu-latest
+  changedfiles:
+    runs-on: [ ubuntu-latest ]
+    outputs:
+      all: ${{ steps.changes.outputs.all}}
     steps:
-      - uses: actions/github-script@v3
+      - uses: actions/github-script@v6
         id: get-pr
         with:
           github-token: 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
@@ -22,18 +22,19 @@ jobs:
             }
             core.info(`Getting PR #${request.pull_number} from ${request.owner}/${request.repo}`)
             try {
-              const result = await github.pulls.get(request)
+              const result = await github.rest.pulls.get(request)
               return result.data
             } catch (err) {
               core.setFailed(`Request failed with error ${err}`)
             }
-      - uses: actions/checkout@v2
+    
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
-          repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
-          ref: ${{ fromJSON(steps.get-pr.outputs.result).head.sha }} # or .head.ref for branch name
-      - name: Print sha
-        id: print_sha
+          fetch-depth: 0
+      - name: Get changed files
+        id: changes
         run: |
-          echo ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
-          echo ${{ fromJSON(steps.get-pr.outputs.result).head.sha }}
-
+          echo "all=$(git diff --name-only --diff-filter=ACMRT ${{ fromJSON(steps.get-pr.outputs.result).base.sha }} ${{ github.sha }} | xargs)" >> $env:GITHUB_OUTPUT
+          echo "${{ steps.changes.outputs.all}}"
+        
